@@ -9,12 +9,41 @@ import {
   createGallery,
   hideLoader,
   showLoader,
+  hideLoadMoreButton,
+  showLoadMoreButton,
+  checkEndOfResults,
 } from './js/render-functions';
+let currentQuery = '';
+let currentPage = 1;
 const form = document.querySelector('.form');
 form.addEventListener('submit', formSubmit);
-function formSubmit(event) {
+const loadMoreBtn = document.querySelector('.load-more');
+loadMoreBtn.addEventListener('click', onLoadMore);
+async function onLoadMore() {
+  currentPage += 1;
+  showLoader();
+  try {
+    const { hits, totalHits } = await getImagesByQuery(
+      currentQuery,
+      currentPage
+    );
+    createGallery(hits);
+    checkEndOfResults(currentPage, totalHits);
+    const cardHeight = document
+      .querySelector('.gallery-item')
+      .getBoundingClientRect().height;
+    window.scrollBy({
+      top: cardHeight * 2,
+      behavior: 'smooth',
+    });
+  } catch (error) {
+    console.error(error.message);
+  } finally {
+    hideLoader();
+  }
+}
+async function formSubmit(event) {
   event.preventDefault();
-
   const searchQuery = new FormData(event.target).get('search-text').trim();
   if (searchQuery === '') {
     iziToast.error({
@@ -23,30 +52,29 @@ function formSubmit(event) {
     });
     return;
   }
+  currentQuery = searchQuery;
+  currentPage = 1;
   clearGallery();
   showLoader();
-  getImagesByQuery(searchQuery)
-    .then(({ hits }) => {
-      if (hits.length === 0) {
-        iziToast.error({
-          title: 'Error',
-          message:
-            'Sorry, there are no images matching your search query. Please try again!',
-        });
-      } else {
-        createGallery(hits);
-        form.reset();
-      }
-    })
-    .catch(error => {
-      console.error(error.message);
-    })
-    .finally(() => {
-      hideLoader();
-    });
+  try {
+    const { hits, totalHits } = await getImagesByQuery(
+      currentQuery,
+      currentPage
+    );
+    if (hits.length === 0) {
+      iziToast.error({
+        title: 'Error',
+        message:
+          'Sorry, there are no images matching your search query. Please try again!',
+      });
+    } else {
+      form.reset();
+      createGallery(hits);
+      checkEndOfResults(currentPage, totalHits);
+    }
+  } catch (error) {
+    console.error(error.message);
+  } finally {
+    hideLoader();
+  }
 }
-// getImagesByQuery('cats').then(data => console.log(data.hits));
-// showLoader();
-// hideLoader();
-// createGallery();
-// clearGallery();

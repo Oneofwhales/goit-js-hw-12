@@ -2,7 +2,13 @@
 import SimpleLightbox from 'simplelightbox';
 // Додатковий імпорт стилів
 import 'simplelightbox/dist/simple-lightbox.min.css';
+// Описаний у документації
+import iziToast from 'izitoast';
+// Додатковий імпорт стилів
+import 'izitoast/dist/css/iziToast.min.css';
+
 const loader = document.querySelector('.loader');
+const loadMoreBtn = document.querySelector('.load-more');
 const galleryContainer = document.querySelector('.gallery');
 const lightbox = new SimpleLightbox('.gallery a');
 
@@ -12,6 +18,13 @@ export function showLoader() {
 
 export function hideLoader() {
   loader.classList.add('is-hidden');
+}
+
+export function showLoadMoreButton() {
+  loadMoreBtn.classList.remove('is-hidden');
+}
+export function hideLoadMoreButton() {
+  loadMoreBtn.classList.add('is-hidden');
 }
 
 export const createGallery = function createGallery(images) {
@@ -39,10 +52,24 @@ export const createGallery = function createGallery(images) {
    </li>`
     )
     .join('');
-  galleryContainer.innerHTML = result;
+  galleryContainer.insertAdjacentHTML('beforeend', result);
   lightbox.refresh();
 };
 
 export const clearGallery = function clearGallery() {
   galleryContainer.innerHTML = '';
+};
+export const checkEndOfResults = function checkEndOfResults(
+  currentPage,
+  totalHits
+) {
+  if (currentPage * 15 >= totalHits) {
+    hideLoadMoreButton();
+    iziToast.info({
+      title: 'Info',
+      message: "We're sorry, but you've reached the end of search results.",
+    });
+  } else {
+    showLoadMoreButton();
+  }
 };

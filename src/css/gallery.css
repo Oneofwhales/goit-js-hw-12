@@ -1,0 +1,50 @@
+.search-button {
+  background-color: #4e75ff;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+}
+.search-button:hover {
+  background-color: #6c8cff;
+}
+
+.form {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 0;
+}
+.form input {
+  border: 1px solid #808080;
+  background-color: transparent;
+  border-radius: 8px;
+  width: 272px;
+  height: 40px;
+}
+.form input:hover {
+  border-color: #000000;
+}
+.form input:focus {
+  border-color: #4e75ff;
+}
+
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 16px;
+}
+
+.gallery-item {
+  border: solid 1px darkblue;
+}
+
+.info {
+  display: flex;
+  justify-content: space-between;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}

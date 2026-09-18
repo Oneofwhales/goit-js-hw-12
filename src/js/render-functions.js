@@ -10,7 +10,7 @@ import 'izitoast/dist/css/iziToast.min.css';
 const loader = document.querySelector('.loader');
 const loadMoreBtn = document.querySelector('.load-more');
 const galleryContainer = document.querySelector('.gallery');
-const lightbox = new SimpleLightbox('.gallery a');
+export const lightbox = new SimpleLightbox('.gallery a');
 
 export function showLoader() {
   loader.classList.remove('is-hidden');
@@ -58,18 +58,4 @@ export const createGallery = function createGallery(images) {
 
 export const clearGallery = function clearGallery() {
   galleryContainer.innerHTML = '';
-};
-export const checkEndOfResults = function checkEndOfResults(
-  currentPage,
-  totalHits
-) {
-  if (currentPage * 15 >= totalHits) {
-    hideLoadMoreButton();
-    iziToast.info({
-      title: 'Info',
-      message: "We're sorry, but you've reached the end of search results.",
-    });
-  } else {
-    showLoadMoreButton();
-  }
 };

@@ -3,7 +3,7 @@ import iziToast from 'izitoast';
 // Додатковий імпорт стилів
 import 'izitoast/dist/css/iziToast.min.css';
 
-import { getImagesByQuery } from './js/pixabay-api';
+import { getImagesByQuery, PER_PAGE } from './js/pixabay-api';
 import {
   clearGallery,
   createGallery,
@@ -11,7 +11,6 @@ import {
   showLoader,
   hideLoadMoreButton,
   showLoadMoreButton,
-  checkEndOfResults,
 } from './js/render-functions';
 let currentQuery = '';
 let currentPage = 1;
@@ -22,6 +21,7 @@ loadMoreBtn.addEventListener('click', onLoadMore);
 async function onLoadMore() {
   currentPage += 1;
   showLoader();
+  hideLoadMoreButton();
   try {
     const { hits, totalHits } = await getImagesByQuery(
       currentQuery,
@@ -38,6 +38,11 @@ async function onLoadMore() {
     });
   } catch (error) {
     console.error(error.message);
+    iziToast.error({
+      title: 'Error',
+      message:
+        'Oops! Something went wrong while loading images. Please try again later.',
+    });
   } finally {
     hideLoader();
   }
@@ -56,6 +61,7 @@ async function formSubmit(event) {
   currentPage = 1;
   clearGallery();
   showLoader();
+  hideLoadMoreButton();
   try {
     const { hits, totalHits } = await getImagesByQuery(
       currentQuery,
@@ -74,7 +80,23 @@ async function formSubmit(event) {
     }
   } catch (error) {
     console.error(error.message);
+    iziToast.error({
+      title: 'Error',
+      message:
+        'Oops! Something went wrong while loading images. Please try again later.',
+    });
   } finally {
     hideLoader();
   }
 }
+const checkEndOfResults = function checkEndOfResults(currentPage, totalHits) {
+  if (currentPage * PER_PAGE >= totalHits) {
+    hideLoadMoreButton();
+    iziToast.info({
+      title: 'Info',
+      message: "We're sorry, but you've reached the end of search results.",
+    });
+  } else {
+    showLoadMoreButton();
+  }
+};
